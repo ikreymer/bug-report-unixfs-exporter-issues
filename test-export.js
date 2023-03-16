@@ -6,6 +6,9 @@ import { MemoryBlockstore } from "blockstore-core";
 import { importer } from 'ipfs-unixfs-importer';
 import { exporter } from 'ipfs-unixfs-exporter';
 
+// uncomment for new version
+// import { fixedSize } from 'ipfs-unixfs-importer/chunker';
+
 import { CID } from 'multiformats/cid';
 import { sha256 } from 'multiformats/hashes/sha2';
 import { UnixFS } from "ipfs-unixfs";
@@ -21,6 +24,12 @@ async function importRange(filename, start, end, opts = {}) {
   const source = [{content: fs.createReadStream(filename, {start, end})}];
 
   let last;
+
+  // old
+  opts = {...opts, chunker: "fixed", maxChunkSize: "32768"};
+
+  // new
+  // opts = {...opts, chunker: fixedSize({"chunkSize": 32768})};
 
   for await (const entry of importer(source, store, opts)) {
     last = entry;
@@ -55,9 +64,13 @@ async function main(t) {
 
   const exported = await readIter(entry.content());
 
+
   console.log("exported", exported.length);
 
-  //console.log("equals", JSON.stringify(Array.from(exported)) === JSON.stringify(Array.from(origFile)));
+  // 7 blocks used with this chunk size
+  console.log("numBlocks", store.data.size);
+  t.is(store.data.size, 7);
+
   t.deepEqual(exported, origFile);
 }
 

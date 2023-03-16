@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "blockstore-core": "^2.0.2",
+    "blockstore-core": "^4.0.1",
     "ipfs-unixfs-exporter": "8.0.1",
     "ipfs-unixfs-importer": "^11.0.1"
   },
